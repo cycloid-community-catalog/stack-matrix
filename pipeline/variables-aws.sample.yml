@@ -1,0 +1,114 @@
+#
+# Matrix
+#
+
+#. matrix_ssl_cert (required): ((custom_ssl.certificate))
+#+ SSL certificate to use with ansible to cover all domains used by matrix.
+matrix_ssl_cert: ((custom_ssl.certificate))
+
+#. matrix_ssl_cert_key (required): ((custom_ssl.private_key))
+#+ SSL certificate private key to use with ansible to cover all domains used by matrix.
+matrix_ssl_cert_key: ((custom_ssl.private_key))
+
+#. coturn_turn_static_auth_secret (required): ((custom_matrix.coturn_turn_static_auth_secret))
+#+ A shared secret (between Coturn and Synapse) used for authentication. You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+coturn_turn_static_auth_secret: ((custom_matrix.coturn_turn_static_auth_secret))
+
+#. synapse_macaroon_secret_key (required): ((custom_matrix.synapse_macaroon_secret_key))
+#+ A secret used to protect access keys issued by the server. You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+synapse_macaroon_secret_key: ((custom_matrix.synapse_macaroon_secret_key))
+
+#
+# Terraform
+#
+
+# Amazon access to use to run terraform. Usually admin account to be able to create Amazon services.
+
+#. aws_access_key (required): ((aws.access_key))
+#+ Amazon AWS access key for Terraform. See value format [here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)
+aws_access_key: ((aws.access_key))
+
+#. aws_secret_key (required): ((aws.secret_key))
+#+ Amazon AWS secret key for Terraform. See value format [here](https://docs.cycloid.io/advanced-guide/integrate-and-use-cycloid-credentials-manager.html#vault-in-the-pipeline)
+aws_secret_key: ((aws.secret_key))
+
+#. aws_default_region (required): eu-west-1
+#+ Amazon AWS region to use for Terraform.
+aws_default_region: eu-west-1
+
+#. terraform_storage_bucket_name (required): ($ organization_canonical $)-terraform-remote-state
+#+ AWS S3 bucket name to store terraform remote state file.
+terraform_storage_bucket_name: ($ organization_canonical $)-terraform-remote-state
+
+#. rds_password (required): ((custom_rds_password))
+#+ Password used for your rds. Set "empty" if you dont use databases
+rds_password: ((custom_rds_password))
+
+#
+# Ansible
+#
+
+#. ansible_vault_password (optional): ((custom_ansible_vault_password))
+#+ Password used by ansible vault to decrypt your vaulted files.
+ansible_vault_password: ((custom_ansible_vault_password))
+
+#. bastion_url (required): user@bastion.server.com
+#+ bastion URL used by ansible to connect on AWS EC2 instances.
+bastion_url: user@bastion.server.com
+
+#. bastion_private_key_pair (required): ((ssh_bastion.ssh_key))
+#+ bastion SSH private key used by ansible to connect on AWS EC2 instances and the bastion itself.
+bastion_private_key_pair: ((ssh_bastion.ssh_key))
+
+#
+# Repos
+#
+
+#. config_git_repository (required): git@github.com:MyUser/config-matrix-riot.git
+#+ Git repository URL containing the config of the stack.
+config_git_repository: git@github.com:MyUser/config-matrix-riot.git
+
+#. config_git_branch (required): master
+#+ Branch of the config Git repository.
+config_git_branch: master
+
+#. config_git_private_key (required): ((ssh_config.ssh_key))
+#+ SSH key pair to fetch the config Git repository.
+config_git_private_key: ((ssh_config.ssh_key))
+
+
+#
+# Default variables that shouldn't be changed except if needed
+#
+
+#. env (required): ($ environment $)
+#+ Name of the project's environment.
+env: ($ environment $)
+
+#. project (required): ($ project $)
+#+ Name of the project.
+project: ($ project $)
+
+#. customer (required): ($ organization_canonical $)
+#+ Name of the Cycloid Organization, used as customer variable name.
+customer: ($ organization_canonical $)
+
+#. stack_git_branch (required): master
+#+ Branch to use on the public stack Git repository
+stack_git_branch: master
+
+#. config_terraform_path (required): ($ project $)/terraform/($ environment $)
+#+ Path of Terraform files in the config git repository
+config_terraform_path: ($ project $)/terraform/($ environment $)
+
+#. terraform_version (required): '0.12.26'
+#+ terraform version used to execute your code.
+terraform_version: '0.12.26'
+
+#. config_ansible_path (required): ($ project $)/ansible
+#+ Path of Ansible files in the config Git repository
+config_ansible_path: ($ project $)/ansible
+
+#. ansible_version (required): "2.7"
+#+ Ansible version used in packer and cycloid-toolkit ansible runner
+ansible_version: "2.7"

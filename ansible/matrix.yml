@@ -1,0 +1,111 @@
+---
+
+#
+# Server
+#
+- hosts: tag_role_matrix:&tag_project_{{project}}:&tag_env_{{ env }}:&tag_cycloid_io_true
+  become: yes
+  serial: 100%
+
+  vars_files:
+    - "group_vars/matrix_servers"
+    - "environments/default_matrix.yml"
+    - [ "environments/{{ env }}-matrix.yml", "environments/empty.yml" ]
+    # - [ "environments/{{ env }}-secrets.yml", "environments/empty.yml" ]
+
+  pre_tasks:
+    - name: Ensure SSL certificate directory exists
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0750
+        # owner: "{{ matrix_user_username }}"
+        # group: "{{ matrix_user_groupname }}"
+      with_items:
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_riot }}"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_dimension }}"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_jitsi }}"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_domain }}"
+
+      when: matrix_ssl_retrieval_method == "manually-managed"
+      tags:
+        - setup-all
+
+    - name: Copy SSL certs
+      copy:
+        content: "{{ matrix_ssl_manual_cert }}"
+        dest: "{{ item }}"
+        # owner: "{{ matrix_user_username }}"
+        # group: "{{ matrix_user_groupname }}"
+      with_items:
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/fullchain.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_riot }}/fullchain.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_dimension }}/fullchain.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_jitsi }}/fullchain.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_domain }}/fullchain.pem"
+
+      when: matrix_ssl_retrieval_method == "manually-managed"
+      tags:
+        - setup-all
+    
+    - name: Copy SSL cert keys
+      copy:
+        content: "{{ matrix_ssl_manual_cert_key }}"
+        dest: "{{ item }}"
+        # owner: "{{ matrix_user_username }}"
+        # group: "{{ matrix_user_groupname }}"
+      with_items:
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}/privkey.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_riot }}/privkey.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_dimension }}/privkey.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_jitsi }}/privkey.pem"
+        - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_domain }}/privkey.pem"
+
+      when: matrix_ssl_retrieval_method == "manually-managed"
+      tags:
+        - setup-all
+
+  roles:
+    - role: cycloid.base-aws
+      tags:
+        - setup-all
+
+    - role: matrix-base
+    - role: matrix-mailer
+    - role: matrix-postgres
+    - role: matrix-corporal
+    - role: matrix-bridge-appservice-discord
+    - role: matrix-bridge-appservice-slack
+    - role: matrix-bridge-appservice-webhooks
+    - role: matrix-bridge-appservice-irc
+    - role: matrix-bridge-mautrix-facebook
+    - role: matrix-bridge-mautrix-hangouts
+    - role: matrix-bridge-mautrix-telegram
+    - role: matrix-bridge-mautrix-whatsapp
+    - role: matrix-bridge-mx-puppet-skype
+    - role: matrix-bridge-mx-puppet-slack
+    - role: matrix-bridge-sms
+    - role: matrix-synapse
+    - role: matrix-riot-web
+    - role: matrix-jitsi
+    - role: matrix-ma1sd
+    - role: matrix-dimension
+    - role: matrix-email2matrix
+    - role: matrix-nginx-proxy
+    - role: matrix-coturn
+    - role: matrix-common-after
+
+    - role: cycloid.telegraf
+      tags:
+        - setup-all
+        - telegraf
+      when: telegraf_install
+
+    - role: cycloid.fluentd
+      tags:
+        - setup-all
+        - fluentd
+
+  tags:
+    - matrix

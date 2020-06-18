@@ -1,0 +1,39 @@
+---
+# Configuration of the Cycloid stack
+version: '2'
+name: 'Matrix Riot.im'
+canonical: 'stack-matrix-riot'
+status: 'public'
+description: |
+  Used to deploy a Matrix (An open network for secure, decentralized communication) server + Riot.im setup.
+keywords:
+  - 'matrix'
+  - 'riot.im'
+  - 'provider:aws'
+author: 'Cycloid'
+image: |
+  https://raw.githubusercontent.com/cycloid-community-catalog/stack-matrix-riot/master/icon.png
+technologies:
+  - technology: Matrix
+    version: x.x
+  - technology: Riot.im
+    version: x.x
+
+config:
+  aws:
+    pipeline:
+      pipeline:
+        path: 'pipeline/pipeline-aws.yml'
+      variables:
+        path: 'pipeline/variables-aws.sample.yml'
+        destination: '($ project $)/pipeline/($ environment $)/variables.yml'
+
+    terraform:
+      matrix:
+        path: 'terraform/aws/matrix.tf.sample'
+        destination: '($ project $)/terraform/($ environment $)/matrix.tf'
+
+    ansible:
+      matrix:
+        path: 'ansible/environments/matrix.yml.sample'
+        destination: '($ project $)/ansible/environments/($ environment $)-matrix.yml'

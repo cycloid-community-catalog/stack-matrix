@@ -1,0 +1,20 @@
+---
+- src: https://github.com/cycloidio/ansible-telegraf
+  version: master
+  name: cycloid.telegraf
+  scm: git
+
+- src: https://github.com/dj-wasabi/ansible-telegraf
+  version: master
+  name: dj-wasabi.telegraf
+  scm: git
+
+- src: https://github.com/cycloidio/ansible-base-aws
+  version: master
+  name: cycloid.base-aws
+  scm: git
+
+- src: https://github.com/cycloidio/ansible-fluentd
+  version: master
+  name: cycloid.fluentd
+  scm: git

@@ -1,0 +1,72 @@
+# In this file you could override any variables present in default_matrix.yaml file
+
+#
+# Matrix / Synapse
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-synapse.md
+#
+
+# The bare domain name which represents your Matrix identity.
+# Matrix user ids for your server will be of the form (`@user:<matrix-domain>`).
+#
+# Note: this playbook does not touch the server referenced here.
+# Installation happens on another server ("matrix.<matrix-domain>").
+#
+# Example value: example.com
+matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
+
+#
+# dimension
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-dimension.md
+#
+
+# matrix_dimension_enabled: true
+
+# matrix_dimension_admins:
+#  - "@user1:{{ matrix_domain }}"
+#  - "@user2:{{ matrix_domain }}"
+
+# matrix_dimension_access_token: "YOUR_ACCESS_TOKEN_HERE"
+
+#
+# jitsi
+#
+
+# matrix_jitsi_enabled: true
+
+# Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
+# or define your own strong passwords manually.
+# matrix_jitsi_jicofo_component_secret: ""
+# matrix_jitsi_jicofo_auth_password: ""
+# matrix_jitsi_jvb_auth_password: ""
+# matrix_jitsi_jibri_recorder_password: ""
+# matrix_jitsi_jibri_xmpp_password: ""
+
+# matrix_jitsi_web_stun_servers:
+# - stun:HOSTNAME_OR_IP:PORT
+
+#
+# Logs
+#
+
+# If you need extra logs file to send to cloudwatch. For example local application logs
+# extra_cycloid_files_watched:
+#  - name: application
+#    path: "*.log"
+
+
+#
+# telegraf / monitoring
+#
+
+# Install telegraf ? (default false)
+# telegraf_install: true
+
+# See telegraf inputs for more plugings https://github.com/influxdata/telegraf/tree/master/plugins/inputs
+# Like https://github.com/influxdata/telegraf/tree/master/plugins/inputs/net_response for tcp port checks
+
+# telegraf_plugins_extra:
+#   linux_sysctl_fs:
+#   conntrack:
+#   nginx:
+#     config:
+#         - urls = ["http://127.0.0.1/nginx_status"]

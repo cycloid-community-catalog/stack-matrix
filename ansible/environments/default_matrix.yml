@@ -1,0 +1,103 @@
+base_extra_packages:
+  - jq
+base_extra_pip_packages:
+  - boto3
+
+#
+# Matrix / Synapse
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-synapse.md
+#
+
+matrix_vars_yml_snapshotting_enabled: false
+
+# A shared secret (between Coturn and Synapse) used for authentication.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+matrix_coturn_turn_static_auth_secret: "{{ coturn_turn_static_auth_secret }}"
+
+# A secret used to protect access keys issued by the server.
+# You can put any string here, but generating a strong one is preferred (e.g. `pwgen -s 64 1`).
+matrix_synapse_macaroon_secret_key: "{{ synapse_macaroon_secret_key }}"
+
+#
+# Riot.im
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-riot-web.md
+#
+
+#
+# SSL
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-ssl-certificates.md
+#
+matrix_ssl_retrieval_method: manually-managed
+
+#
+# S3 medias
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-s3.md
+#
+
+matrix_s3_media_store_enabled: true
+
+matrix_s3_media_store_bucket_name: "{{ s3_medias_bucket_name }}"
+matrix_s3_media_store_aws_access_key: "{{ s3_medias_iam_user_access_key }}"
+matrix_s3_media_store_aws_secret_key: "{{ s3_medias_iam_user_secret_key }}"
+matrix_s3_media_store_region: "{{ aws_default_region }}"
+
+#
+# postgresql
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-external-postgres.md
+#
+
+# disable docker container
+matrix_postgres_enabled: false
+
+# Rewire Synapse to use your external Postgres server
+matrix_synapse_database_host: "{{ rds_address }}"
+matrix_synapse_database_user: "{{ rds_username }}"
+matrix_synapse_database_password: "{{ rds_password }}"
+matrix_synapse_database_database: "{{ rds_database }}"
+
+#
+# Email
+#
+matrix_mailer_sender_address: "matrix@{{ matrix_domain }}"
+matrix_mailer_relay_use: true
+matrix_mailer_relay_host_name: "email-smtp.{{ aws_default_region }}.amazonaws.com"
+matrix_mailer_relay_host_port: 587
+matrix_mailer_relay_auth: true
+matrix_mailer_relay_auth_username: "{{ ses_iam_user_access_key }}"
+matrix_mailer_relay_auth_password: "{{ ses_iam_user_smtp_password }}"
+
+#
+# COTURN
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-turn.md
+#
+matrix_coturn_turn_external_ip_address: "{{ server_public_ip }}"
+
+#
+# jitsi
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-jitsi.md
+#
+
+matrix_jitsi_enabled: false
+
+matrix_jitsi_enable_auth: true
+matrix_jitsi_enable_guests: true
+
+#
+# Logs
+#
+
+# extra_cycloid_files_watched: []
+# default_cycloid_files_watched:
+#  - name: nginx-access
+#    path: "/var/log/nginx/access.log"
+#  - name: nginx-error
+#    path: "/var/log/nginx/error.log"
+
+# cycloid_files_watched: "{{ default_cycloid_files_watched + extra_cycloid_files_watched }}"
+
+#
+# telegraf / monitoring
+#
+
+# Do not install telegraf
+telegraf_install: false
