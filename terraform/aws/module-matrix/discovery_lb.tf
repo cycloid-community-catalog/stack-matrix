@@ -4,11 +4,11 @@
 #
 
 # alb target group
-resource "aws_alb_target_group" "server-80" {
+resource "aws_alb_target_group" "server_443" {
   count    = var.create_external_alb_discovery_listener_rule ? 1 : 0
-  name     = length(replace("${var.project}${var.env}matrix80", var.nameregex, "")) > 32 ? "${local.default_short_name}matrix80" : replace("${var.project}${var.env}server80", var.nameregex, "")
-  port     = 80
-  protocol = "HTTP"
+  name     = length(replace("${var.project}${var.env}matrix443", var.nameregex, "")) > 32 ? "${local.default_short_name}matrix443" : replace("${var.project}${var.env}server443", var.nameregex, "")
+  port     = 443
+  protocol = "HTTPS"
   vpc_id   = var.vpc_id
 
   health_check {
@@ -25,7 +25,7 @@ resource "aws_alb_listener_rule" "discovery" {
 
   action {
     type = "forward"
-    target_group_arn = aws_alb_target_group.server-80[0].arn
+    target_group_arn = aws_alb_target_group.server_443[0].arn
   }
 
   condition {
