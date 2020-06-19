@@ -133,4 +133,7 @@ module "matrix" {
 
   #. external_alb_discovery_listener_arn (optional): ""
   #+ External ALB listener ARN for the matrix discovery files rule.
+
+  #. external_alb_redirect_to_host (optional,string): ""
+  #+ The domain from where matrix will be responding. Usually matrix.<domain>.
 }

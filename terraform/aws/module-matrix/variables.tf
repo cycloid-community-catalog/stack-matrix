@@ -177,20 +177,8 @@ variable "external_alb_discovery_listener_arn" {
   default = ""
 }
 
-variable "external_alb_health_check_path" {
-  default = "/"
-}
-
-variable "external_alb_health_check_matcher" {
-  default = 200
-}
-
-variable "external_alb_health_check_timeout" {
-  default = 15
-}
-
-variable "external_alb_health_check_interval" {
-  default = 45
+variable "external_alb_redirect_to_host" {
+  default = ""
 }
 
 # Others
