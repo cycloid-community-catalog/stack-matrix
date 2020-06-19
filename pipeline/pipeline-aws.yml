@@ -30,6 +30,10 @@ shared:
         - -ec
         - |
           pip${PYTHON_VERSION} install --no-cache-dir dnspython
+
+          echo -e "$MATRIX_SSL_CERT" > ansible-playbook/files/ssl/fullchain.pem
+          echo -e "$MATRIX_SSL_CERT_KEY" > ansible-playbook/files/ssl/privkey.pem
+
           /usr/bin/ansible-runner
       # caches:
       #   - path: ansible-playbook/roles
@@ -289,6 +293,8 @@ jobs:
     - task: run-ansible
       <<: *run-ansible-from-bastion
       params:
+        MATRIX_SSL_CERT: ((matrix_ssl_cert))
+        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
         SSH_JUMP_URL: ((bastion_url))
         SSH_PRIVATE_KEY: ((bastion_private_key_pair))
         ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
@@ -305,8 +311,6 @@ jobs:
           default_ec2_region: ((aws_default_region))
           aws_default_region: ((aws_default_region))
           rds_password: ((rds_password))
-          matrix_ssl_manual_cert: ((matrix_ssl_cert))
-          matrix_ssl_manual_cert_key: ((matrix_ssl_cert_key))
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
         TAGS:
@@ -352,9 +356,11 @@ jobs:
         EXTRA_PATH:
           - matrix-playbook/
 
-    - task: run-ansible
+    - task: run-ansibleMATRIX_
       <<: *run-ansible-from-bastion
       params:
+        MATRIX_SSL_CERT: ((matrix_ssl_cert))
+        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
         SSH_JUMP_URL: ((bastion_url))
         SSH_PRIVATE_KEY: ((bastion_private_key_pair))
         ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
@@ -371,8 +377,6 @@ jobs:
           default_ec2_region: ((aws_default_region))
           aws_default_region: ((aws_default_region))
           rds_password: ((rds_password))
-          matrix_ssl_manual_cert: ((matrix_ssl_cert))
-          matrix_ssl_manual_cert_key: ((matrix_ssl_cert_key))
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
         TAGS:
@@ -421,6 +425,8 @@ jobs:
     - task: run-ansible
       <<: *run-ansible-from-bastion
       params:
+        MATRIX_SSL_CERT: ((matrix_ssl_cert))
+        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
         SSH_JUMP_URL: ((bastion_url))
         SSH_PRIVATE_KEY: ((bastion_private_key_pair))
         ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
@@ -437,8 +443,6 @@ jobs:
           default_ec2_region: ((aws_default_region))
           aws_default_region: ((aws_default_region))
           rds_password: ((rds_password))
-          matrix_ssl_manual_cert: ((matrix_ssl_cert))
-          matrix_ssl_manual_cert_key: ((matrix_ssl_cert_key))
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
         TAGS:
