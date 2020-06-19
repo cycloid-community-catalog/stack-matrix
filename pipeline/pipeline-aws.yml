@@ -29,7 +29,7 @@ shared:
         args:
         - -ec
         - |
-          pip${PYTHON_VERSION} install --no-cache-dir dnspython
+          pip${PYTHON_VERSION} install --no-cache-dir -r ansible-playbook/requirements.txt
 
           echo -e "$MATRIX_SSL_CERT" > ansible-playbook/files/ssl/fullchain.pem
           echo -e "$MATRIX_SSL_CERT_KEY" > ansible-playbook/files/ssl/privkey.pem

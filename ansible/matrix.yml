@@ -66,6 +66,18 @@
       tags:
         - setup-all
 
+    - name: Make sure the PostgreSQL database exists
+      shell: 
+        cmd: echo "SELECT 'CREATE DATABASE {{ matrix_synapse_database_database }} ENCODING \"UTF-8\" LC_COLLATE \"C\" LC_CTYPE \"C\" TEMPLATE template0' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '{{ matrix_synapse_database_database }}')\gexec" | psql postgres
+      environment:
+        PGHOST: "{{ matrix_synapse_database_host }}"
+        PGPORT: "5432"
+        PGUSER: "{{ matrix_synapse_database_user }}"
+        PGPASSWORD: "{{ matrix_synapse_database_password }}"
+      when: not matrix_postgres_enabled
+      tags:
+        - setup-all
+  
   roles:
     - role: cycloid.base-aws
       tags:

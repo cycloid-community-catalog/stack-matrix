@@ -1,5 +1,6 @@
 base_extra_packages:
   - jq
+  - postgresql-client
 base_extra_pip_packages:
   - boto3
 
@@ -53,7 +54,7 @@ matrix_postgres_enabled: false
 matrix_synapse_database_host: "{{ rds_address }}"
 matrix_synapse_database_user: "{{ rds_username }}"
 matrix_synapse_database_password: "{{ rds_password }}"
-matrix_synapse_database_database: "{{ rds_database }}"
+matrix_synapse_database_database: "matrix"
 
 #
 # Email
