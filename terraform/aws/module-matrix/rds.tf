@@ -13,7 +13,10 @@ resource "aws_security_group" "postgresql_database" {
     to_port   = 5432
     protocol  = "tcp"
 
-    security_groups = [aws_security_group.server.id]
+    security_groups = compact([
+      var.rds_extra_sg_allow,
+      aws_security_group.server.id,
+    ])
   }
 
   tags = merge(local.merged_tags, {
@@ -45,7 +48,7 @@ resource "aws_db_instance" "postgresql_database" {
   parameter_group_name = var.rds_parameters
   db_subnet_group_name = var.rds_subnet_group != "" ? var.rds_subnet_group : aws_db_subnet_group.postgresql_subnet[0].id
 
-  vpc_security_group_ids = compact([var.rds_extra_sg_allow, aws_security_group.postgresql_database[0].id])
+  vpc_security_group_ids = [aws_security_group.postgresql_database[0].id]
 
   tags = merge(local.merged_tags, {
     Name = "${var.customer}-${var.project}-rds-${var.env}"
