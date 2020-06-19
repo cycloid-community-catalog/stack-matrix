@@ -118,10 +118,6 @@ variable "rds_password" {
   default = "ChangeMePls"
 }
 
-variable "rds_database" {
-  default = "matrix"
-}
-
 variable "rds_backup_retention" {
   default = 7
 }

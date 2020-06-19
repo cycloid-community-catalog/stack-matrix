@@ -39,11 +39,6 @@ output "rds_username" {
   description = "Username of the RDS database."
 }
 
-output "rds_database" {
-  value       = module.matrix.rds_database
-  description = "Database name of the RDS database."
-}
-
 #
 # S3 Bucket medias
 #

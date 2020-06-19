@@ -28,10 +28,6 @@ output "rds_port" {
   value = join("", aws_db_instance.postgresql_database.*.port)
 }
 
-output "rds_database" {
-  value = join("", aws_db_instance.postgresql_database.*.name)
-}
-
 output "rds_username" {
   value = join("", aws_db_instance.postgresql_database.*.username)
 }

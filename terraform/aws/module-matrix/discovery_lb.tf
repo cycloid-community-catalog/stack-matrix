@@ -17,11 +17,6 @@ resource "aws_alb_target_group" "server-80" {
     timeout  = var.external_alb_health_check_timeout
     interval = var.external_alb_health_check_interval
   }
-
-  stickiness {
-    type    = "lb_cookie"
-    enabled = true
-  }
 }
 
 resource "aws_alb_listener_rule" "discovery" {
