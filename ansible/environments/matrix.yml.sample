@@ -26,6 +26,7 @@ matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
 # matrix_dimension_admins:
 # - "@dimension:{{ matrix_domain }}"
 
+# The access token should be shared by the pipeline.
 # matrix_dimension_access_token: "{{ dimension_access_token }}"
 
 #
@@ -34,16 +35,18 @@ matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
 
 # matrix_jitsi_enabled: true
 
-# Run `bash inventory/scripts/jitsi-generate-passwords.sh` to generate these passwords,
+# Run `bash ansible/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
-# matrix_jitsi_jicofo_component_secret: ""
-# matrix_jitsi_jicofo_auth_password: ""
-# matrix_jitsi_jvb_auth_password: ""
-# matrix_jitsi_jibri_recorder_password: ""
-# matrix_jitsi_jibri_xmpp_password: ""
+# Those passwords should be shared by the pipeline.
+# matrix_jitsi_jicofo_component_secret: " {{ jitsi_jicofo_component_secret }}"
+# matrix_jitsi_jicofo_auth_password: " {{ jitsi_jicofo_auth_password }}"
+# matrix_jitsi_jvb_auth_password: " {{ jitsi_jvb_auth_password }}"
+# matrix_jitsi_jibri_recorder_password: " {{ jitsi_jibri_recorder_password }}"
+# matrix_jitsi_jibri_xmpp_password: " {{ jitsi_jibri_xmpp_password }}"
 
-# matrix_jitsi_web_stun_servers:
-# - stun:HOSTNAME_OR_IP:PORT
+# By default, the configuration only allow pepole from the internal authentication to create rooms but guests are allowed to join rooms.
+# You will need to create internal authentication users manually:
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-jitsi.md#required-if-configuring-jitsi-with-internal-authentication-register-new-users
 
 #
 # Logs

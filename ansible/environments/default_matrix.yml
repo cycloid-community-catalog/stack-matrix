@@ -83,6 +83,9 @@ matrix_jitsi_enabled: false
 matrix_jitsi_enable_auth: true
 matrix_jitsi_enable_guests: true
 
+matrix_jitsi_web_stun_servers:
+- stun:matrix.{{ matrix_domain }}:5349
+
 #
 # Logs
 #

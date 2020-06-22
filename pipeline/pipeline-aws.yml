@@ -314,6 +314,11 @@ jobs:
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
           dimension_access_token: ((dimension_access_token))
+          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
         TAGS:
           - setup-all
 
@@ -381,6 +386,11 @@ jobs:
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
           dimension_access_token: ((dimension_access_token))
+          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
         TAGS:
           - start
 
@@ -448,5 +458,10 @@ jobs:
           coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
           synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
           dimension_access_token: ((dimension_access_token))
+          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
         TAGS:
           - stop
