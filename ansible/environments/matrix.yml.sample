@@ -38,11 +38,11 @@ matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
 # Run `bash ansible/scripts/jitsi-generate-passwords.sh` to generate these passwords,
 # or define your own strong passwords manually.
 # Those passwords should be shared by the pipeline.
-# matrix_jitsi_jicofo_component_secret: " {{ jitsi_jicofo_component_secret }}"
-# matrix_jitsi_jicofo_auth_password: " {{ jitsi_jicofo_auth_password }}"
-# matrix_jitsi_jvb_auth_password: " {{ jitsi_jvb_auth_password }}"
-# matrix_jitsi_jibri_recorder_password: " {{ jitsi_jibri_recorder_password }}"
-# matrix_jitsi_jibri_xmpp_password: " {{ jitsi_jibri_xmpp_password }}"
+# matrix_jitsi_jicofo_component_secret: "{{ jitsi_jicofo_component_secret }}"
+# matrix_jitsi_jicofo_auth_password: "{{ jitsi_jicofo_auth_password }}"
+# matrix_jitsi_jvb_auth_password: "{{ jitsi_jvb_auth_password }}"
+# matrix_jitsi_jibri_recorder_password: "{{ jitsi_jibri_recorder_password }}"
+# matrix_jitsi_jibri_xmpp_password: "{{ jitsi_jibri_xmpp_password }}"
 
 # By default, the configuration only allow pepole from the internal authentication to create rooms but guests are allowed to join rooms.
 # You will need to create internal authentication users manually:
