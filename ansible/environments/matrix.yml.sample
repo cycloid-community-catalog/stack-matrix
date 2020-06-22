@@ -19,13 +19,14 @@ matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
 # https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-dimension.md
 #
 
+# Setup the dimension user and recover it's access token before enabling dimension here.
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-dimension.md#access-token
 # matrix_dimension_enabled: true
 
 # matrix_dimension_admins:
-#  - "@user1:{{ matrix_domain }}"
-#  - "@user2:{{ matrix_domain }}"
+# - "@dimension:{{ matrix_domain }}"
 
-# matrix_dimension_access_token: "YOUR_ACCESS_TOKEN_HERE"
+# matrix_dimension_access_token: "{{ dimension_access_token }}"
 
 #
 # jitsi
