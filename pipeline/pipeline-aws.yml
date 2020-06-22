@@ -357,7 +357,7 @@ jobs:
         EXTRA_PATH:
           - matrix-playbook/
 
-    - task: run-ansibleMATRIX_
+    - task: run-ansible
       <<: *run-ansible-from-bastion
       params:
         MATRIX_SSL_CERT: ((matrix_ssl_cert))
