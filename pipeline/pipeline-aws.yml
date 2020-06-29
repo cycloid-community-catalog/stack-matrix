@@ -329,14 +329,20 @@ jobs:
   - do:
     - get: git_stack-ansible
       params: {depth: 1}
-      trigger: false
+      passed:
+        - ansible-deployment
+      trigger: true
 
     - get: git_config-ansible
       params: {depth: 1}
-      trigger: false
+      passed:
+        - ansible-deployment
+      trigger: true
 
     - get: git_matrix-ansible-playbook
       params: {depth: 1}
+      passed:
+        - ansible-deployment
       trigger: false
 
     - get: tfstate
@@ -401,14 +407,20 @@ jobs:
   - do:
     - get: git_stack-ansible
       params: {depth: 1}
+      passed:
+        - ansible-deployment
       trigger: false
 
     - get: git_config-ansible
       params: {depth: 1}
+      passed:
+        - ansible-deployment
       trigger: false
 
     - get: git_matrix-ansible-playbook
       params: {depth: 1}
+      passed:
+        - ansible-deployment
       trigger: false
 
     - get: tfstate
