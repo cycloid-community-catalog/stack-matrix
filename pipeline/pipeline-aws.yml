@@ -162,28 +162,28 @@ jobs:
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
-    - do:
-      - get: git_stack-terraform
-        trigger: true
-      - get: git_config-terraform
-        trigger: true
+  - aggregate:
+    - get: git_stack-terraform
+      trigger: true
+    - get: git_config-terraform
+      trigger: true
 
-      - task: merge-stack-and-config
-        config:
-          <<: *merge-stack-and-config
-          inputs:
-          - name: git_config-terraform
-            path: "config"
-          - name: git_stack-terraform
-            path: "stack"
-        params:
-          CONFIG_PATH: ((config_terraform_path))
-          STACK_PATH: terraform/aws
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-terraform
+        path: "config"
+      - name: git_stack-terraform
+        path: "stack"
+    params:
+      CONFIG_PATH: ((config_terraform_path))
+      STACK_PATH: terraform/aws
 
-      - put: tfstate
-        params:
-          plan_only: true
-          terraform_source: merged-stack/
+  - put: tfstate
+    params:
+      plan_only: true
+      terraform_source: merged-stack/
 
 # Merge and trigger an apply manually (no autostart of this job)
 - name: terraform-apply
@@ -191,70 +191,71 @@ jobs:
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
-    - do:
-      - get: git_stack-terraform
-        trigger: false
-        passed:
-          - terraform-plan
-      - get: git_config-terraform
-        trigger: false
-        passed:
-          - terraform-plan
-      - get: tfstate
-        trigger: false
-        passed:
-          - terraform-plan
+  - aggregate:
+    - get: git_stack-terraform
+      trigger: false
+      passed:
+        - terraform-plan
+    - get: git_config-terraform
+      trigger: false
+      passed:
+        - terraform-plan
+    - get: tfstate
+      trigger: false
+      passed:
+        - terraform-plan
 
-      - task: merge-stack-and-config
-        config:
-          <<: *merge-stack-and-config
-          inputs:
-          - name: git_config-terraform
-            path: "config"
-          - name: git_stack-terraform
-            path: "stack"
-        params:
-          CONFIG_PATH: ((config_terraform_path))
-          STACK_PATH: terraform/aws
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-terraform
+        path: "config"
+      - name: git_stack-terraform
+        path: "stack"
+    params:
+      CONFIG_PATH: ((config_terraform_path))
+      STACK_PATH: terraform/aws
 
-      - put: tfstate
-        params:
-          plan_run: true
-          terraform_source: merged-stack/
+  - put: tfstate
+    params:
+      plan_run: true
+      terraform_source: merged-stack/
 
 - name: terraform-destroy
   max_in_flight: 1
   build_logs_to_retain: 10
   plan:
-    - do:
-        - get: git_stack-terraform
-          trigger: false
-        - get: git_config-terraform
-          trigger: false
-        - task: merge-stack-and-config
-          config:
-            <<: *merge-stack-and-config
-            inputs:
-            - name: git_config-terraform
-              path: "config"
-            - name: git_stack-terraform
-              path: "stack"
-          params:
-            CONFIG_PATH: ((config_terraform_path))
-            STACK_PATH: terraform/aws
+  - aggregate:
+    - get: git_stack-terraform
+      trigger: false
+    - get: git_config-terraform
+      trigger: false
 
-        - put: tfstate
-          params:
-            action: destroy
-            terraform_source: merged-stack/
-          get_params:
-            action: destroy
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-terraform
+        path: "config"
+      - name: git_stack-terraform
+        path: "stack"
+    params:
+      CONFIG_PATH: ((config_terraform_path))
+      STACK_PATH: terraform/aws
+
+  - put: tfstate
+    params:
+      action: destroy
+      terraform_source: merged-stack/
+    get_params:
+      action: destroy
 
 - name: ansible-deployment
   serial: True
   build_logs_to_retain: 10
   plan:
-  - do:
+  - aggregate:
     - get: git_stack-ansible
       params: {depth: 1}
       trigger: false
@@ -272,61 +273,61 @@ jobs:
         - terraform-apply
       trigger: false
 
-    - task: merge-stack-and-config
-      config:
-        <<: *merge-stack-and-config
-        inputs:
-        - name: git_config-ansible
-          path: "config"
-        - name: git_stack-ansible
-          path: "stack"
-        - name: tfstate
-          path: "terraform"
-        - name: git_matrix-ansible-playbook
-          path: "matrix-playbook"
-      params:
-        CONFIG_PATH: ((config_ansible_path))
-        STACK_PATH: ansible
-        EXTRA_PATH:
-          - matrix-playbook/
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-ansible
+        path: "config"
+      - name: git_stack-ansible
+        path: "stack"
+      - name: tfstate
+        path: "terraform"
+      - name: git_matrix-ansible-playbook
+        path: "matrix-playbook"
+    params:
+      CONFIG_PATH: ((config_ansible_path))
+      STACK_PATH: ansible
+      EXTRA_PATH:
+        - matrix-playbook/
 
-    - task: run-ansible
-      <<: *run-ansible-from-bastion
-      params:
-        MATRIX_SSL_CERT: ((matrix_ssl_cert))
-        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
-        SSH_JUMP_URL: ((bastion_url))
-        SSH_PRIVATE_KEY: ((bastion_private_key_pair))
-        ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
-        AWS_DEFAULT_REGION: ((aws_default_region))
-        AWS_ACCESS_KEY_ID: ((aws_access_key))
-        AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-        ANSIBLE_PLAYBOOK_PATH: ansible-playbook
-        ANSIBLE_PLAYBOOK_NAME: matrix.yml
-        ANSIBLE_FORCE_GALAXY: false
-        EXTRA_ANSIBLE_VARS:
-          customer: ((customer))
-          project: ((project))
-          env: ((env))
-          default_ec2_region: ((aws_default_region))
-          aws_default_region: ((aws_default_region))
-          rds_password: ((rds_password))
-          coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
-          synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
-          dimension_access_token: ((dimension_access_token))
-          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
-          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
-          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
-          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
-          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
-        TAGS:
-          - setup-all
+  - task: run-ansible
+    <<: *run-ansible-from-bastion
+    params:
+      MATRIX_SSL_CERT: ((matrix_ssl_cert))
+      MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
+      SSH_JUMP_URL: ((bastion_url))
+      SSH_PRIVATE_KEY: ((bastion_private_key_pair))
+      ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
+      AWS_DEFAULT_REGION: ((aws_default_region))
+      AWS_ACCESS_KEY_ID: ((aws_access_key))
+      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+      ANSIBLE_PLAYBOOK_PATH: ansible-playbook
+      ANSIBLE_PLAYBOOK_NAME: matrix.yml
+      ANSIBLE_FORCE_GALAXY: false
+      EXTRA_ANSIBLE_VARS:
+        customer: ((customer))
+        project: ((project))
+        env: ((env))
+        default_ec2_region: ((aws_default_region))
+        aws_default_region: ((aws_default_region))
+        rds_password: ((rds_password))
+        coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
+        synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
+        dimension_access_token: ((dimension_access_token))
+        jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+        jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+        jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+        jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+        jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
+      TAGS:
+        - setup-all
 
 - name: ansible-start
   serial: True
   build_logs_to_retain: 10
   plan:
-  - do:
+  - aggregate:
     - get: git_stack-ansible
       params: {depth: 1}
       passed:
@@ -350,61 +351,61 @@ jobs:
         - ansible-deployment
       trigger: false
 
-    - task: merge-stack-and-config
-      config:
-        <<: *merge-stack-and-config
-        inputs:
-        - name: git_config-ansible
-          path: "config"
-        - name: git_stack-ansible
-          path: "stack"
-        - name: tfstate
-          path: "terraform"
-        - name: git_matrix-ansible-playbook
-          path: "matrix-playbook"
-      params:
-        CONFIG_PATH: ((config_ansible_path))
-        STACK_PATH: ansible
-        EXTRA_PATH:
-          - matrix-playbook/
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-ansible
+        path: "config"
+      - name: git_stack-ansible
+        path: "stack"
+      - name: tfstate
+        path: "terraform"
+      - name: git_matrix-ansible-playbook
+        path: "matrix-playbook"
+    params:
+      CONFIG_PATH: ((config_ansible_path))
+      STACK_PATH: ansible
+      EXTRA_PATH:
+        - matrix-playbook/
 
-    - task: run-ansible
-      <<: *run-ansible-from-bastion
-      params:
-        MATRIX_SSL_CERT: ((matrix_ssl_cert))
-        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
-        SSH_JUMP_URL: ((bastion_url))
-        SSH_PRIVATE_KEY: ((bastion_private_key_pair))
-        ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
-        AWS_DEFAULT_REGION: ((aws_default_region))
-        AWS_ACCESS_KEY_ID: ((aws_access_key))
-        AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-        ANSIBLE_PLAYBOOK_PATH: ansible-playbook
-        ANSIBLE_PLAYBOOK_NAME: matrix.yml
-        ANSIBLE_FORCE_GALAXY: false
-        EXTRA_ANSIBLE_VARS:
-          customer: ((customer))
-          project: ((project))
-          env: ((env))
-          default_ec2_region: ((aws_default_region))
-          aws_default_region: ((aws_default_region))
-          rds_password: ((rds_password))
-          coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
-          synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
-          dimension_access_token: ((dimension_access_token))
-          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
-          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
-          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
-          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
-          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
-        TAGS:
-          - start
+  - task: run-ansible
+    <<: *run-ansible-from-bastion
+    params:
+      MATRIX_SSL_CERT: ((matrix_ssl_cert))
+      MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
+      SSH_JUMP_URL: ((bastion_url))
+      SSH_PRIVATE_KEY: ((bastion_private_key_pair))
+      ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
+      AWS_DEFAULT_REGION: ((aws_default_region))
+      AWS_ACCESS_KEY_ID: ((aws_access_key))
+      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+      ANSIBLE_PLAYBOOK_PATH: ansible-playbook
+      ANSIBLE_PLAYBOOK_NAME: matrix.yml
+      ANSIBLE_FORCE_GALAXY: false
+      EXTRA_ANSIBLE_VARS:
+        customer: ((customer))
+        project: ((project))
+        env: ((env))
+        default_ec2_region: ((aws_default_region))
+        aws_default_region: ((aws_default_region))
+        rds_password: ((rds_password))
+        coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
+        synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
+        dimension_access_token: ((dimension_access_token))
+        jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+        jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+        jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+        jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+        jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
+      TAGS:
+        - start
 
 - name: ansible-stop
   serial: True
   build_logs_to_retain: 10
   plan:
-  - do:
+  - aggregate:
     - get: git_stack-ansible
       params: {depth: 1}
       passed:
@@ -428,52 +429,52 @@ jobs:
         - ansible-deployment
       trigger: false
 
-    - task: merge-stack-and-config
-      config:
-        <<: *merge-stack-and-config
-        inputs:
-        - name: git_config-ansible
-          path: "config"
-        - name: git_stack-ansible
-          path: "stack"
-        - name: tfstate
-          path: "terraform"
-        - name: git_matrix-ansible-playbook
-          path: "matrix-playbook"
-      params:
-        CONFIG_PATH: ((config_ansible_path))
-        STACK_PATH: ansible
-        EXTRA_PATH:
-          - matrix-playbook/
+  - task: merge-stack-and-config
+    config:
+      <<: *merge-stack-and-config
+      inputs:
+      - name: git_config-ansible
+        path: "config"
+      - name: git_stack-ansible
+        path: "stack"
+      - name: tfstate
+        path: "terraform"
+      - name: git_matrix-ansible-playbook
+        path: "matrix-playbook"
+    params:
+      CONFIG_PATH: ((config_ansible_path))
+      STACK_PATH: ansible
+      EXTRA_PATH:
+        - matrix-playbook/
 
-    - task: run-ansible
-      <<: *run-ansible-from-bastion
-      params:
-        MATRIX_SSL_CERT: ((matrix_ssl_cert))
-        MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
-        SSH_JUMP_URL: ((bastion_url))
-        SSH_PRIVATE_KEY: ((bastion_private_key_pair))
-        ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
-        AWS_DEFAULT_REGION: ((aws_default_region))
-        AWS_ACCESS_KEY_ID: ((aws_access_key))
-        AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
-        ANSIBLE_PLAYBOOK_PATH: ansible-playbook
-        ANSIBLE_PLAYBOOK_NAME: matrix.yml
-        ANSIBLE_FORCE_GALAXY: false
-        EXTRA_ANSIBLE_VARS:
-          customer: ((customer))
-          project: ((project))
-          env: ((env))
-          default_ec2_region: ((aws_default_region))
-          aws_default_region: ((aws_default_region))
-          rds_password: ((rds_password))
-          coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
-          synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
-          dimension_access_token: ((dimension_access_token))
-          jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
-          jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
-          jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
-          jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
-          jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
-        TAGS:
-          - stop
+  - task: run-ansible
+    <<: *run-ansible-from-bastion
+    params:
+      MATRIX_SSL_CERT: ((matrix_ssl_cert))
+      MATRIX_SSL_CERT_KEY: ((matrix_ssl_cert_key))
+      SSH_JUMP_URL: ((bastion_url))
+      SSH_PRIVATE_KEY: ((bastion_private_key_pair))
+      ANSIBLE_VAULT_PASSWORD: ((ansible_vault_password))
+      AWS_DEFAULT_REGION: ((aws_default_region))
+      AWS_ACCESS_KEY_ID: ((aws_access_key))
+      AWS_SECRET_ACCESS_KEY: ((aws_secret_key))
+      ANSIBLE_PLAYBOOK_PATH: ansible-playbook
+      ANSIBLE_PLAYBOOK_NAME: matrix.yml
+      ANSIBLE_FORCE_GALAXY: false
+      EXTRA_ANSIBLE_VARS:
+        customer: ((customer))
+        project: ((project))
+        env: ((env))
+        default_ec2_region: ((aws_default_region))
+        aws_default_region: ((aws_default_region))
+        rds_password: ((rds_password))
+        coturn_turn_static_auth_secret: ((coturn_turn_static_auth_secret))
+        synapse_macaroon_secret_key: ((synapse_macaroon_secret_key))
+        dimension_access_token: ((dimension_access_token))
+        jitsi_jicofo_component_secret: ((jitsi_jicofo_component_secret))
+        jitsi_jicofo_auth_password: ((jitsi_jicofo_auth_password))
+        jitsi_jvb_auth_password: ((jitsi_jvb_auth_password))
+        jitsi_jibri_recorder_password: ((jitsi_jibri_recorder_password))
+        jitsi_jibri_xmpp_password: ((jitsi_jibri_xmpp_password))
+      TAGS:
+        - stop
