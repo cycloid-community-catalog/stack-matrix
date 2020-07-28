@@ -1,6 +1,5 @@
 base_extra_packages:
   - jq
-  - postgresql-client
 base_extra_pip_packages:
   - boto3
 

@@ -65,6 +65,13 @@
       when: matrix_ssl_retrieval_method == "manually-managed"
       tags:
         - setup-all
+    
+    - name: Make sure psql if installed
+      package:
+        name: postgresql-client
+        state: present
+      tags:
+        - setup-all
 
     - name: Make sure the PostgreSQL database exists
       shell: 
