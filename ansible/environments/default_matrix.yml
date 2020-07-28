@@ -3,6 +3,8 @@ base_extra_packages:
 base_extra_pip_packages:
   - boto3
 
+matrix_data_device: /dev/xvdf
+
 #
 # Matrix / Synapse
 # https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-synapse.md
