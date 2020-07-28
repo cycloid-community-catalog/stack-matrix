@@ -88,9 +88,9 @@ bastion_private_key_pair: ((ssh_bastion.ssh_key))
 # Repos
 #
 
-#. config_git_repository (required): git@github.com:MyUser/config-matrix-riot.git
+#. config_git_repository (required): git@github.com:MyUser/config-matrix.git
 #+ Git repository URL containing the config of the stack.
-config_git_repository: git@github.com:MyUser/config-matrix-riot.git
+config_git_repository: git@github.com:MyUser/config-matrix.git
 
 #. config_git_branch (required): master
 #+ Branch of the config Git repository.

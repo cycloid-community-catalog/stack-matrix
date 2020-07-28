@@ -15,6 +15,13 @@
 matrix_domain: YOUR_BARE_DOMAIN_NAME_HERE
 
 #
+# Synapse Admin
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-synapse-admin.md
+#
+
+# matrix_synapse_admin_enabled: false
+
+#
 # dimension
 # https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-dimension.md
 #

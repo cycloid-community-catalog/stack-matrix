@@ -1,6 +1,6 @@
-# stack-matrix-riot
+# stack-matrix
 
-This stack will deploy a Matrix (An open network for secure, decentralized communication) server with the Riot.im chat app.
+This stack will deploy a [Matrix](https://matrix.org) (An open network for secure, decentralized communication) server with the optional [Element](https://element.io/) and [Jitsi](https://jitsi.org/) apps.
 
 # Architecture
 

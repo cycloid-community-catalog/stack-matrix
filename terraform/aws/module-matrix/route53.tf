@@ -11,12 +11,12 @@ resource "aws_route53_record" "matrix" {
     records = [aws_eip.server.public_ip]
 }
 
-# riot CNAME
+# element CNAME
 # matrix.cycloid.io
-resource "aws_route53_record" "riot" {
+resource "aws_route53_record" "element" {
     count   = var.create_route53_records ? 1 : 0
     zone_id = var.route53_zone_id
-    name    = "riot"
+    name    = "element"
     type    = "CNAME"
     ttl     = "3600"
     records = [aws_route53_record.matrix[0].fqdn]
