@@ -27,8 +27,8 @@ matrix_synapse_macaroon_secret_key: "{{ synapse_macaroon_secret_key }}"
 matrix_synapse_admin_enabled: false
 
 #
-# Riot.im
-# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-riot-web.md
+# Element
+# https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/configuring-playbook-client-element.md
 #
 
 #

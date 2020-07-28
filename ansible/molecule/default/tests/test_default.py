@@ -22,4 +22,4 @@ def test_telegraf(host):
 def test_nginx_vhosts(host):
     application = host.ansible("uri", "url=http://127.0.0.1/ return_content=yes headers={'Host':'application.com'}", check=False)
 
-    assert 'riot' in application['content']
+    assert 'element' in application['content']

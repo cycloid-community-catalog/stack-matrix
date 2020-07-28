@@ -92,7 +92,7 @@ resources:
   type: git
   icon: github-circle
   source:
-    uri: https://github.com/cycloid-community-catalog/stack-matrix-riot
+    uri: https://github.com/cycloid-community-catalog/stack-matrix
     branch: ((stack_git_branch))
     paths:
       - ansible/*
@@ -138,7 +138,7 @@ resources:
   type: git
   icon: github-circle
   source:
-    uri: https://github.com/cycloid-community-catalog/stack-matrix-riot
+    uri: https://github.com/cycloid-community-catalog/stack-matrix
     branch: ((stack_git_branch))
     paths:
       - terraform/aws/*
