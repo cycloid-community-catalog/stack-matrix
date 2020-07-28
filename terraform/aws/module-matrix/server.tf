@@ -81,6 +81,10 @@ resource "random_shuffle" "server_subnet_id" {
   result_count = 1
 }
 
+data "aws_subnet" "selected" {
+  id = random_shuffle.server_subnet_id.result[0]
+}
+
 resource "aws_instance" "server" {
   ami           = data.aws_ami.debian.id
   instance_type = var.server_type
@@ -88,7 +92,7 @@ resource "aws_instance" "server" {
 
   iam_instance_profile = aws_iam_instance_profile.server.name
 
-  subnet_id              = random_shuffle.server_subnet_id.result[0]
+  subnet_id              = data.aws_subnet.selected.id
   vpc_security_group_ids = compact(
     [
       var.bastion_sg_allow,
@@ -114,6 +118,23 @@ resource "aws_instance" "server" {
     Name = "${var.project}-${var.env}-server"
     role = "matrix"
   })
+}
+
+resource "aws_ebs_volume" "data" {
+  availability_zone = data.aws_subnet.selected.availability_zone
+  size              = var.server_data_disk_size
+  type              = var.server_data_disk_type
+
+  tags = merge(local.merged_tags, {
+      Name = "${var.project}-${var.env}-server-data"
+      role = "matrix"
+  })
+}
+
+resource "aws_volume_attachment" "data" {
+  device_name = "/dev/xvdf"
+  volume_id   = aws_ebs_volume.data.id
+  instance_id = aws_instance.server.id
 }
 
 #

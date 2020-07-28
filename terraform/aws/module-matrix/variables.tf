@@ -151,6 +151,14 @@ variable "server_disk_size" {
   default = 30
 }
 
+variable "server_data_disk_type" {
+  default = "gp2"
+}
+
+variable "server_data_disk_size" {
+  default = 10
+}
+
 variable "server_ebs_optimized" {
   default = false
 }
