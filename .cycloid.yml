@@ -1,14 +1,15 @@
 ---
 # Configuration of the Cycloid stack
 version: '2'
-name: 'Matrix Riot.im'
-canonical: 'stack-matrix-riot'
+name: 'Matrix'
+canonical: 'stack-matrix'
 status: 'public'
 description: |
-  Used to deploy a Matrix (An open network for secure, decentralized communication) server + Riot.im setup.
+  Used to deploy a Matrix (An open network for secure, decentralized communication) server with the optional Element and Jitsi apps.
 keywords:
   - 'matrix'
-  - 'riot.im'
+  - 'element'
+  - 'jitsi'
   - 'provider:aws'
 author: 'Cycloid'
 image: |
