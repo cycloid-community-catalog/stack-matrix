@@ -116,6 +116,8 @@
       tags:
         - setup-all
 
+    - role: cycloid-matrix-extra-appservices
+
     - role: matrix-base
     - role: matrix-mailer
     - role: matrix-postgres

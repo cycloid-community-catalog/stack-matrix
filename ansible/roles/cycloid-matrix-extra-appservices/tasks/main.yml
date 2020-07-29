@@ -1,0 +1,16 @@
+- import_tasks: "{{ role_path }}/tasks/init.yml"
+  tags:
+    - always
+
+- name: Copy extra appservices config files
+  copy:
+    src: "{{ playbook_dir }}/files/extra-appservices-config/"
+    dest: "{{ cycloid_matrix_extra_appservices_config_path }}"
+    directory_mode: 0770
+    mode: 0640
+    owner:  "{{ matrix_user_username }}"
+    group: "{{ matrix_user_groupname }}"
+  when: run_setup|bool
+  tags:
+    - setup-all
+
