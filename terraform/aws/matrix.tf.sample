@@ -51,6 +51,9 @@ module "matrix" {
   #. server_disk_size (optional): 30
   #+ Disk size of the server.
 
+  #. server_data_disk_size (optional): 10
+  #+ Disk size dedicated to the matrix setup.
+
   #
   # rds / mysql
   #

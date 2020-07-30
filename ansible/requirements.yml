@@ -18,3 +18,20 @@
   version: master
   name: cycloid.fluentd
   scm: git
+
+# TMp waiting the merge https://github.com/tumf/ansible-role-systemd-service/pull/29
+#- src: https://github.com/tumf/ansible-role-systemd-service
+- src: https://github.com/cycloidio/ansible-role-systemd-service
+  version: master
+  name: tumf.systemd
+  scm: git
+
+- src: https://github.com/cycloidio/ansible-systemd
+  version: master
+  name: cycloid.systemd
+  scm: git
+
+- src: https://github.com/cycloidio/ansible-ebs-automatic-nvme-mapping
+  version: master
+  name: cycloid.ebs-automatic-nvme-mapping
+  scm: git

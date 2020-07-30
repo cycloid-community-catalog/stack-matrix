@@ -1,0 +1,13 @@
+- debug:
+    msg: "{{ cycloid_matrix_extra_appservices_config_files | map('regex_replace', '^(.*)$', '/extra-appservices-config/\\1') | list }}"
+- set_fact:
+    matrix_synapse_container_extra_arguments: >
+      {{ matrix_synapse_container_extra_arguments|default([]) }}
+      +
+      ["--mount type=bind,src={{ cycloid_matrix_extra_appservices_config_path }},dst=/extra-appservices-config,ro"]
+    matrix_synapse_app_service_config_files: >
+      {{ matrix_synapse_app_service_config_files|default([]) }}
+      +
+      {{ cycloid_matrix_extra_appservices_config_files | map('regex_replace', '^(.*)$', '/extra-appservices-config/\1') | list }}
+  when: cycloid_matrix_extra_appservices_config_files|length > 0
+

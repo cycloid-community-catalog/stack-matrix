@@ -14,23 +14,49 @@
     # - [ "environments/{{ env }}-secrets.yml", "environments/empty.yml" ]
 
   pre_tasks:
-    # - name: Ensure SSL certificate directory exists
-    #   file:
-    #     path: "{{ item }}"
-    #     state: directory
-    #     mode: 0750
-    #     # owner: "{{ matrix_user_username }}"
-    #     # group: "{{ matrix_user_groupname }}"
-    #   with_items:
-    #     - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_matrix }}"
-    #     - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_element }}"
-    #     - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_dimension }}"
-    #     - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_server_fqn_jitsi }}"
-    #     - "{{ matrix_ssl_config_dir_path }}/live/{{ matrix_domain }}"
+    # Symlink are defined for nvme and systemd mount doesnt accept it
+    - name: Get the real name of data device, not symlink
+      shell: "readlink -f {{ matrix_data_device }}"
+      register: data_real_device
+      tags:
+       - setup-all
 
-    #   when: matrix_ssl_retrieval_method == "manually-managed"
-    #   tags:
-    #     - setup-all
+    - name: Set real name of data device
+      set_fact:
+        matrix_data_device: "{{ data_real_device.stdout }}"
+      tags:
+       - setup-all
+
+    - name: Check if data device need to be initialized
+      command: "file -s {{matrix_data_device}} --dereference"
+      ignore_errors: True
+      register: initiate_volume_device
+      failed_when: "'ext4 filesystem data' in initiate_volume_device.stdout"
+      tags:
+       - setup-all
+
+    - name: Format data device in ext4
+      command: "mkfs.ext4 {{matrix_data_device}}"
+      when: initiate_volume_device is success
+      tags:
+       - setup-all
+
+    - import_role:
+        name: cycloid.ebs-automatic-nvme-mapping
+      tags:
+        - setup-all
+ 
+    - import_role:
+        name: cycloid.systemd
+      vars:
+        systemd_type: mount
+        systemd_mount_type: ext4
+        systemd_mount_device: "{{matrix_data_device}}"
+        systemd_mount_mountpoint: "{{matrix_base_data_path}}"
+        systemd_mount_options: rw,discard,errors=remount-ro
+        systemd_mount_started: true
+      tags:
+        - setup-all
 
     - name: Copy SSL certs
       copy:
@@ -89,6 +115,8 @@
     - role: cycloid.base-aws
       tags:
         - setup-all
+
+    - role: cycloid-matrix-extra-appservices
 
     - role: matrix-base
     - role: matrix-mailer
