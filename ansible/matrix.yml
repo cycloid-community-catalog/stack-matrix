@@ -58,6 +58,20 @@
       tags:
         - setup-all
 
+    - block:
+      - name: Get data device systemd mount unit name
+        command: "systemd-escape -p --suffix=mount '{{ matrix_base_data_path }}'"
+        register: matrix_data_device_mountpoint
+        check_mode: no
+      
+      - name: Make sure the data device is mounted
+        systemd:
+          name: "{{ matrix_data_device_mountpoint.stdout }}"
+          state: started
+          daemon_reload: yes
+      tags:
+        - setup-all
+
     - name: Copy SSL certs
       copy:
         src: files/ssl/fullchain.pem
