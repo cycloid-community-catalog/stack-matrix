@@ -271,7 +271,7 @@ jobs:
     - get: tfstate
       passed:
         - terraform-apply
-      trigger: false
+      trigger: true
 
   - task: merge-stack-and-config
     config:
@@ -344,12 +344,12 @@ jobs:
       params: {depth: 1}
       passed:
         - ansible-deployment
-      trigger: false
+      trigger: true
 
     - get: tfstate
       passed:
         - ansible-deployment
-      trigger: false
+      trigger: true
 
   - task: merge-stack-and-config
     config:
